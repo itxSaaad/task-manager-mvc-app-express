@@ -1,6 +1,7 @@
-import Task from '../models/taskSchema.js';
-
 import asyncWrapper from '../middlewares/asyncWrapper.js';
+import { createCustomError } from '../middlewares/errorHandler.js';
+
+import Task from '../models/taskSchema.js';
 
 // @desc Get all tasks
 // @route GET /api/v1/tasks
@@ -37,7 +38,7 @@ const getTaskById = asyncWrapper(async (req, res) => {
     const { id: taskID } = req.params;
     const task = await Task.findOne({ _id: taskID });
     if (!task) {
-      return res.status(404).json({ msg: `No task with id: ${taskID}` });
+      return next(createCustomError(`No task with id : ${taskID}`, 404));
     }
     res.status(200).json({ task });
   } catch (error) {
@@ -57,7 +58,7 @@ const updateTask = asyncWrapper(async (req, res) => {
       runValidators: true,
     });
     if (!task) {
-      return res.status(404).json({ msg: `No task with id: ${taskID}` });
+      return next(createCustomError(`No task with id : ${taskID}`, 404));
     }
     res.status(200).json({ task });
   } catch (error) {
@@ -74,7 +75,7 @@ const deleteTask = asyncWrapper(async (req, res) => {
     const { id: taskID } = req.params;
     const task = await Task.findOneAndDelete({ _id: taskID });
     if (!task) {
-      return res.status(404).json({ msg: `No task with id: ${taskID}` });
+      return next(createCustomError(`No task with id : ${taskID}`, 404));
     }
     res.status(200).json({ task });
   } catch (error) {
@@ -82,4 +83,4 @@ const deleteTask = asyncWrapper(async (req, res) => {
   }
 });
 
-export { getAllTasks, createTask, getTaskById, updateTask, deleteTask };
+export { createTask, deleteTask, getAllTasks, getTaskById, updateTask };

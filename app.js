@@ -1,11 +1,15 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import taskRoutes from './routes/tasksRoutes.js';
 import connectDb from './config/db.js';
+
+import { errorHandler } from './middlewares/errorHandler.js';
+import notFoundHandler from './middlewares/notFoundHandler.js';
+
+import taskRoutes from './routes/tasksRoutes.js';
 
 const app = express();
 
@@ -32,6 +36,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/tasks', taskRoutes);
+
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running in ${NODE_ENV} mode on port ${PORT}`);
